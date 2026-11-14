@@ -1,0 +1,22 @@
+services:
+  claude:
+    build:
+      context: .
+      args:
+        USER_UID: ${UID:-1000}    # run: export UID GID (or set them in .env)
+        USER_GID: ${GID:-1000}
+    image: claude-code:local
+    container_name: claude-code
+    stdin_open: true
+    tty: true
+    volumes:
+      # Project directory on the host -> /workspace in the container
+      - ${WORKSPACE_DIR:-./claude-workspace}:/workspace
+      # Persistent login/config; survives "docker compose down" and rebuilds
+      - claude-config:/home/dev/.claude-config
+    # Optional alternative to interactive login (token from "claude setup-token")
+    # environment:
+    #   - CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
+
+volumes:
+  claude-config:
